@@ -52,41 +52,70 @@ export default function WorksPage() {
     setLoading(false)
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#f9f9f9' }}>
-      <Navbar />
+  const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
+  const input = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none' }
 
-      <div style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ background: '#fff', border: '1px solid #eee', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>作品を追加</h2>
-          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="タイトル*" style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', marginBottom: '8px', color: '#111' }} />
-          <input value={genre} onChange={e => setGenre(e.target.value)} placeholder="ジャンル" style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', marginBottom: '8px', color: '#111' }} />
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-            <input value={price} onChange={e => setPrice(e.target.value)} placeholder="頒布価格（円）" type="number" style={{ flex: 1, padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', color: '#111' }} />
-            <input value={stock} onChange={e => setStock(e.target.value)} placeholder="在庫数" type="number" style={{ flex: 1, padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', color: '#111' }} />
+  return (
+    <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
+      <Navbar />
+      <div style={{ padding: '28px 24px', maxWidth: '680px', margin: '0 auto' }}>
+
+        {/* ヘッダー */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#111', marginBottom: '2px' }}>作品管理</h1>
+            <p style={{ fontSize: '12px', color: '#999' }}>{works.length}作品登録済み</p>
           </div>
-          <button onClick={handleAdd} disabled={loading || !title} style={{ width: '100%', padding: '11px', background: '#111', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', cursor: 'pointer' }}>
+        </div>
+
+        {/* 追加フォーム */}
+        <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #6366f1' }}>
+          <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#6366f1', marginBottom: '14px', letterSpacing: '0.05em' }}>＋ 新しい作品を追加</h2>
+          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="タイトル*" style={{ ...input, marginBottom: '8px' }} />
+          <input value={genre} onChange={e => setGenre(e.target.value)} placeholder="ジャンル（例：オリジナル・東方）" style={{ ...input, marginBottom: '8px' }} />
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+            <input value={price} onChange={e => setPrice(e.target.value)} placeholder="頒布価格（円）" type="number" style={{ ...input, flex: 1 }} />
+            <input value={stock} onChange={e => setStock(e.target.value)} placeholder="在庫数" type="number" style={{ ...input, flex: 1 }} />
+          </div>
+          <button onClick={handleAdd} disabled={loading || !title}
+            style={{ width: '100%', padding: '11px', background: loading || !title ? '#ccc' : '#111', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', cursor: loading || !title ? 'not-allowed' : 'pointer', fontWeight: '500' }}>
             {loading ? '追加中...' : '追加する'}
           </button>
         </div>
 
+        {/* 作品一覧 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {works.length === 0 && <p style={{ color: '#aaa', fontSize: '14px', textAlign: 'center' }}>まだ作品がありません</p>}
+          {works.length === 0 &&
+            <div style={{ ...card, padding: '40px', textAlign: 'center' }}>
+              <p style={{ fontSize: '32px', marginBottom: '8px' }}>📚</p>
+              <p style={{ fontSize: '14px', color: '#999' }}>まだ作品がありません</p>
+              <p style={{ fontSize: '12px', color: '#bbb', marginTop: '4px' }}>上のフォームから追加してください</p>
+            </div>
+          }
           {works.map(w => (
-            <div key={w.id} style={{ background: '#fff', border: '1px solid #eee', borderRadius: '12px', padding: '16px 20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>{w.title}</p>
-                  <p style={{ fontSize: '12px', color: '#888' }}>{w.genre || 'ジャンル未設定'}</p>
+            <div key={w.id} style={{ ...card, padding: '16px 20px' }}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>📖</div>
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#111', marginBottom: '3px' }}>{w.title}</p>
+                    <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#666', padding: '2px 8px', borderRadius: '20px' }}>{w.genre || 'ジャンル未設定'}</span>
+                  </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#111' }}>¥{w.price.toLocaleString()}</p>
-                  <p style={{ fontSize: '12px', color: w.stock > 0 ? '#22c55e' : '#ef4444' }}>在庫 {w.stock}部</p>
+                  <p style={{ fontSize: '15px', fontWeight: '700', color: '#111', marginBottom: '4px' }}>¥{w.price.toLocaleString()}</p>
+                  <span style={{ fontSize: '11px', fontWeight: '600', padding: '2px 10px', borderRadius: '20px', background: w.stock === 0 ? '#fef2f2' : w.stock < 5 ? '#fffbeb' : '#ecfdf5', color: w.stock === 0 ? '#ef4444' : w.stock < 5 ? '#f59e0b' : '#10b981' }}>
+                    在庫 {w.stock}部
+                  </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
       </div>
     </div>
   )
