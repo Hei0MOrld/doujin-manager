@@ -42,7 +42,7 @@ export default function DashboardPage() {
   }, [])
 
   const maxRevenue = Math.max(...recentSales.map(s => s.revenue), 1)
-  const card = { background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }
+  const card = { background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
