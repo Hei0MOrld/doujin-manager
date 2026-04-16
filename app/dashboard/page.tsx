@@ -44,7 +44,7 @@ export default function DashboardPage() {
   const maxRevenue = Math.max(...recentSales.map(s => s.revenue), 1)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9f9f9' }}>
+    <div style={{ minHeight: '100vh', background: '#f0f0f0' }}>
       <Navbar />
       <div style={{ padding: '32px 24px', maxWidth: '900px', margin: '0 auto' }}>
 
