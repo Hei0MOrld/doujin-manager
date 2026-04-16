@@ -59,7 +59,6 @@ export default function SalesPage() {
       quantity: qty,
       revenue: (work?.price ?? 0) * qty,
     })
-    // 在庫を減らす
     await supabase.rpc('decrement_stock', { work_id: workId, qty })
     setWorkId(''); setEventId(''); setQuantity('')
     await fetchAll()
@@ -67,47 +66,77 @@ export default function SalesPage() {
   }
 
   const totalRevenue = sales.reduce((sum, s) => sum + s.revenue, 0)
+  const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
+  const select = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none', background: '#fff' }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9f9f9' }}>
+    <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
       <Navbar />
+      <div style={{ padding: '28px 24px', maxWidth: '680px', margin: '0 auto' }}>
 
-      <div style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ background: '#111', borderRadius: '12px', padding: '20px', marginBottom: '24px', color: '#fff' }}>
-          <p style={{ fontSize: '13px', opacity: 0.6, marginBottom: '4px' }}>累計売上</p>
-          <p style={{ fontSize: '28px', fontWeight: '600' }}>¥{totalRevenue.toLocaleString()}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#111', marginBottom: '2px' }}>売上記録</h1>
+            <p style={{ fontSize: '12px', color: '#999' }}>{sales.length}件の記録</p>
+          </div>
         </div>
 
-        <div style={{ background: '#fff', border: '1px solid #eee', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>売上を記録</h2>
-          <select value={workId} onChange={e => setWorkId(e.target.value)} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', marginBottom: '8px', color: '#111' }}>
+        {/* 累計売上カード */}
+        <div style={{ background: '#111', borderRadius: '16px', padding: '24px', marginBottom: '20px', color: '#fff', border: '1px solid #333', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
+          <p style={{ fontSize: '11px', opacity: 0.5, marginBottom: '6px', letterSpacing: '0.05em' }}>累計売上</p>
+          <p style={{ fontSize: '36px', fontWeight: '700', letterSpacing: '-2px', marginBottom: '4px' }}>¥{totalRevenue.toLocaleString()}</p>
+          <p style={{ fontSize: '11px', opacity: 0.4 }}>{sales.length}件の販売記録</p>
+        </div>
+
+        {/* 記録フォーム */}
+        <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #10b981' }}>
+          <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#10b981', marginBottom: '14px', letterSpacing: '0.05em' }}>＋ 売上を記録</h2>
+          <select value={workId} onChange={e => setWorkId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
             <option value="">作品を選択*</option>
             {works.map(w => <option key={w.id} value={w.id}>{w.title}（¥{w.price}）</option>)}
           </select>
-          <select value={eventId} onChange={e => setEventId(e.target.value)} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', marginBottom: '8px', color: '#111' }}>
+          <select value={eventId} onChange={e => setEventId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
             <option value="">イベントを選択*</option>
             {events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
           </select>
-          <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="販売数*" type="number" style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px', marginBottom: '12px', color: '#111' }} />
-          <button onClick={handleAdd} disabled={loading || !workId || !eventId || !quantity} style={{ width: '100%', padding: '11px', background: '#111', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', cursor: 'pointer' }}>
+          <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="販売数*" type="number"
+            style={{ ...select, marginBottom: '14px' }} />
+          <button onClick={handleAdd} disabled={loading || !workId || !eventId || !quantity}
+            style={{ width: '100%', padding: '11px', background: loading || !workId || !eventId || !quantity ? '#ccc' : '#111', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', cursor: loading || !workId || !eventId || !quantity ? 'not-allowed' : 'pointer', fontWeight: '500' }}>
             {loading ? '記録中...' : '記録する'}
           </button>
         </div>
 
+        {/* 売上一覧 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {sales.length === 0 && <p style={{ color: '#aaa', fontSize: '14px', textAlign: 'center' }}>まだ売上記録がありません</p>}
+          {sales.length === 0 &&
+            <div style={{ ...card, padding: '40px', textAlign: 'center' }}>
+              <p style={{ fontSize: '32px', marginBottom: '8px' }}>💰</p>
+              <p style={{ fontSize: '14px', color: '#999' }}>まだ売上記録がありません</p>
+              <p style={{ fontSize: '12px', color: '#bbb', marginTop: '4px' }}>上のフォームから記録してください</p>
+            </div>
+          }
           {sales.map(s => (
-            <div key={s.id} style={{ background: '#fff', border: '1px solid #eee', borderRadius: '12px', padding: '16px 20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>{s.works?.title}</p>
-                  <p style={{ fontSize: '12px', color: '#888' }}>{s.events?.name} · {s.quantity}部</p>
+            <div key={s.id} style={{ ...card, padding: '16px 20px' }}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>💰</div>
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#111', marginBottom: '3px' }}>{s.works?.title}</p>
+                    <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#666', padding: '2px 8px', borderRadius: '20px' }}>{s.events?.name} · {s.quantity}部</span>
+                  </div>
                 </div>
-                <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>¥{s.revenue.toLocaleString()}</p>
+                <span style={{ fontSize: '15px', fontWeight: '700', color: '#10b981' }}>
+                  ¥{s.revenue.toLocaleString()}
+                </span>
               </div>
             </div>
           ))}
         </div>
+
       </div>
     </div>
   )
