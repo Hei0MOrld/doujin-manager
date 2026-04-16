@@ -43,6 +43,7 @@ export default function DashboardPage() {
   }, [])
 
   const maxRevenue = Math.max(...recentSales.map(s => s.revenue), 1)
+  const card = { background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', border: '1px solid #e5e5e5' }
 
   const navItems = [
     { href: '/works', label: '作品管理', desc: '在庫・価格を管理', accent: '#6366f1', bg: '#eef2ff', icon: '📚' },
@@ -55,19 +56,18 @@ export default function DashboardPage() {
       <Navbar />
       <div style={{ padding: '28px 24px', maxWidth: '960px', margin: '0 auto' }}>
 
-        {/* サマリー */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: '14px', marginBottom: '20px' }}>
-          <div style={{ background: '#111', borderRadius: '16px', padding: '24px', color: '#fff', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
+          <div style={{ background: '#111', borderRadius: '16px', padding: '24px', color: '#fff', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', border: '1px solid #333' }}>
             <p style={{ fontSize: '11px', opacity: 0.5, marginBottom: '6px', letterSpacing: '0.05em' }}>累計売上</p>
             <p style={{ fontSize: '36px', fontWeight: '700', letterSpacing: '-2px', marginBottom: '4px' }}>¥{totalRevenue.toLocaleString()}</p>
             <p style={{ fontSize: '11px', opacity: 0.4 }}>全イベント合計</p>
           </div>
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', borderLeft: '4px solid #6366f1' }}>
+          <div style={{ ...card, borderLeft: '4px solid #6366f1' }}>
             <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '6px', letterSpacing: '0.05em' }}>登録作品</p>
             <p style={{ fontSize: '36px', fontWeight: '700', color: '#111', letterSpacing: '-2px', marginBottom: '4px' }}>{worksCount}</p>
             <p style={{ fontSize: '11px', color: '#aaa' }}>作品</p>
           </div>
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', borderLeft: '4px solid #f59e0b' }}>
+          <div style={{ ...card, borderLeft: '4px solid #f59e0b' }}>
             <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '6px', letterSpacing: '0.05em' }}>参加イベント</p>
             <p style={{ fontSize: '36px', fontWeight: '700', color: '#111', letterSpacing: '-2px', marginBottom: '4px' }}>{eventsCount}</p>
             <p style={{ fontSize: '11px', color: '#aaa' }}>回</p>
@@ -75,8 +75,7 @@ export default function DashboardPage() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
-          {/* 売上グラフ */}
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+          <div style={card}>
             <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>📊 イベント別売上</p>
             {recentSales.length === 0
               ? <p style={{ fontSize: '12px', color: '#ccc', textAlign: 'center', padding: '24px 0' }}>売上データなし</p>
@@ -96,8 +95,7 @@ export default function DashboardPage() {
             }
           </div>
 
-          {/* 在庫少ない作品 */}
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+          <div style={card}>
             <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>⚠️ 在庫少ない作品</p>
             {lowStock.length === 0
               ? <p style={{ fontSize: '12px', color: '#ccc', textAlign: 'center', padding: '24px 0' }}>在庫十分です</p>
@@ -113,11 +111,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ナビカード */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
           {navItems.map(item => (
             <div key={item.href} onClick={() => router.push(item.href)}
-              style={{ background: item.bg, borderRadius: '16px', padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${item.accent}`, transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+              style={{ background: item.bg, borderRadius: '16px', padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${item.accent}`, border: `1px solid ${item.accent}33`, transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)' }}
             >
