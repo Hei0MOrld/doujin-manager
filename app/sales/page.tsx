@@ -23,6 +23,10 @@ export default function SalesPage() {
   const [eventId, setEventId] = useState('')
   const [quantity, setQuantity] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState<'normal' | 'live'>('normal')
+  const [liveEventId, setLiveEventId] = useState('')
+  const [liveCounts, setLiveCounts] = useState<{ [id: string]: number }>({})
+  const [liveLoading, setLiveLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -65,9 +69,37 @@ export default function SalesPage() {
     setLoading(false)
   }
 
+  const handleLiveSave = async () => {
+    if (!liveEventId) return
+    const entries = Object.entries(liveCounts).filter(([_, qty]) => qty > 0)
+    if (entries.length === 0) return
+    setLiveLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    for (const [wId, qty] of entries) {
+      const work = works.find(w => w.id === wId)
+      await supabase.from('sales').insert({
+        user_id: user!.id,
+        work_id: wId,
+        event_id: liveEventId,
+        quantity: qty,
+        revenue: (work?.price ?? 0) * qty,
+      })
+      await supabase.rpc('decrement_stock', { work_id: wId, qty })
+    }
+    setLiveCounts({})
+    setLiveEventId('')
+    setMode('normal')
+    await fetchAll()
+    setLiveLoading(false)
+  }
+
   const totalRevenue = sales.reduce((sum, s) => sum + s.revenue, 0)
   const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
   const select = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none', background: '#fff' }
+  const liveTotal = Object.entries(liveCounts).reduce((sum, [id, qty]) => {
+    const work = works.find(w => w.id === id)
+    return sum + (work?.price ?? 0) * qty
+  }, 0)
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
@@ -79,6 +111,10 @@ export default function SalesPage() {
             <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#111', marginBottom: '2px' }}>売上記録</h1>
             <p style={{ fontSize: '12px', color: '#999' }}>{sales.length}件の記録</p>
           </div>
+          <button onClick={() => setMode(mode === 'live' ? 'normal' : 'live')}
+            style={{ padding: '8px 16px', borderRadius: '20px', border: 'none', background: mode === 'live' ? '#10b981' : '#111', color: '#fff', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>
+            {mode === 'live' ? '🟢 イベント中' : '🎪 イベントモード'}
+          </button>
         </div>
 
         {/* 累計売上カード */}
@@ -88,24 +124,67 @@ export default function SalesPage() {
           <p style={{ fontSize: '11px', opacity: 0.4 }}>{sales.length}件の販売記録</p>
         </div>
 
-        {/* 記録フォーム */}
-        <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #10b981' }}>
-          <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#10b981', marginBottom: '14px', letterSpacing: '0.05em' }}>＋ 売上を記録</h2>
-          <select value={workId} onChange={e => setWorkId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
-            <option value="">作品を選択*</option>
-            {works.map(w => <option key={w.id} value={w.id}>{w.title}（¥{w.price}）</option>)}
-          </select>
-          <select value={eventId} onChange={e => setEventId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
-            <option value="">イベントを選択*</option>
-            {events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-          </select>
-          <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="販売数*" type="number"
-            style={{ ...select, marginBottom: '14px' }} />
-          <button onClick={handleAdd} disabled={loading || !workId || !eventId || !quantity}
-            style={{ width: '100%', padding: '11px', background: loading || !workId || !eventId || !quantity ? '#ccc' : '#111', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', cursor: loading || !workId || !eventId || !quantity ? 'not-allowed' : 'pointer', fontWeight: '500' }}>
-            {loading ? '記録中...' : '記録する'}
-          </button>
-        </div>
+        {/* イベントモード */}
+        {mode === 'live' && (
+          <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #10b981' }}>
+            <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#10b981', marginBottom: '14px' }}>🎪 イベントモード</h2>
+            <select value={liveEventId} onChange={e => setLiveEventId(e.target.value)} style={{ ...select, marginBottom: '16px' }}>
+              <option value="">イベントを選択*</option>
+              {events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
+
+            {liveEventId && (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  {works.map(w => (
+                    <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f9f9f7', borderRadius: '12px', border: '1px solid #e5e5e5' }}>
+                      <div>
+                        <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', marginBottom: '2px' }}>{w.title}</p>
+                        <p style={{ fontSize: '11px', color: '#999' }}>¥{w.price.toLocaleString()}</p>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <button onClick={() => setLiveCounts(p => ({ ...p, [w.id]: Math.max(0, (p[w.id] ?? 0) - 1) }))}
+                          style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #e5e5e5', background: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>－</button>
+                        <span style={{ fontSize: '18px', fontWeight: '700', color: '#111', minWidth: '24px', textAlign: 'center' }}>{liveCounts[w.id] ?? 0}</span>
+                        <button onClick={() => setLiveCounts(p => ({ ...p, [w.id]: (p[w.id] ?? 0) + 1 }))}
+                          style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', background: '#111', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>＋</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderTop: '1px solid #e5e5e5', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '13px', color: '#888' }}>合計</span>
+                  <span style={{ fontSize: '20px', fontWeight: '700', color: '#10b981' }}>¥{liveTotal.toLocaleString()}</span>
+                </div>
+                <button onClick={handleLiveSave} disabled={liveLoading || liveTotal === 0}
+                  style={{ width: '100%', padding: '13px', background: liveTotal === 0 ? '#ccc' : '#10b981', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: liveTotal === 0 ? 'not-allowed' : 'pointer' }}>
+                  {liveLoading ? '記録中...' : `¥${liveTotal.toLocaleString()} を記録する`}
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* 通常記録フォーム */}
+        {mode === 'normal' && (
+          <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #10b981' }}>
+            <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#10b981', marginBottom: '14px', letterSpacing: '0.05em' }}>＋ 売上を記録</h2>
+            <select value={workId} onChange={e => setWorkId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
+              <option value="">作品を選択*</option>
+              {works.map(w => <option key={w.id} value={w.id}>{w.title}（¥{w.price}）</option>)}
+            </select>
+            <select value={eventId} onChange={e => setEventId(e.target.value)} style={{ ...select, marginBottom: '8px' }}>
+              <option value="">イベントを選択*</option>
+              {events.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
+            <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="販売数*" type="number"
+              style={{ ...select, marginBottom: '14px' }} />
+            <button onClick={handleAdd} disabled={loading || !workId || !eventId || !quantity}
+              style={{ width: '100%', padding: '11px', background: loading || !workId || !eventId || !quantity ? '#ccc' : '#111', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', cursor: 'pointer', fontWeight: '500' }}>
+              {loading ? '記録中...' : '記録する'}
+            </button>
+          </div>
+        )}
 
         {/* 売上一覧 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
