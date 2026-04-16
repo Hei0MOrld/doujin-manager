@@ -63,14 +63,14 @@ export default function DashboardPage() {
             <p style={{ fontSize: '11px', opacity: 0.4 }}>全イベント合計</p>
           </div>
           <div style={{ ...card, borderLeft: '4px solid #6366f1' }}>
-            <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '6px', letterSpacing: '0.05em' }}>登録作品</p>
+            <p style={{ fontSize: '11px', color: '#999', marginBottom: '6px', letterSpacing: '0.05em' }}>登録作品</p>
             <p style={{ fontSize: '36px', fontWeight: '700', color: '#111', letterSpacing: '-2px', marginBottom: '4px' }}>{worksCount}</p>
-            <p style={{ fontSize: '11px', color: '#aaa' }}>作品</p>
+            <p style={{ fontSize: '11px', color: '#999' }}>作品</p>
           </div>
           <div style={{ ...card, borderLeft: '4px solid #f59e0b' }}>
-            <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '6px', letterSpacing: '0.05em' }}>参加イベント</p>
+            <p style={{ fontSize: '11px', color: '#999', marginBottom: '6px', letterSpacing: '0.05em' }}>参加イベント</p>
             <p style={{ fontSize: '36px', fontWeight: '700', color: '#111', letterSpacing: '-2px', marginBottom: '4px' }}>{eventsCount}</p>
-            <p style={{ fontSize: '11px', color: '#aaa' }}>回</p>
+            <p style={{ fontSize: '11px', color: '#999' }}>回</p>
           </div>
         </div>
 
@@ -78,7 +78,7 @@ export default function DashboardPage() {
           <div style={card}>
             <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>📊 イベント別売上</p>
             {recentSales.length === 0
-              ? <p style={{ fontSize: '12px', color: '#ccc', textAlign: 'center', padding: '24px 0' }}>売上データなし</p>
+              ? <p style={{ fontSize: '12px', color: '#999', textAlign: 'center', padding: '24px 0' }}>売上データなし</p>
               : <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {recentSales.map((s, i) => (
                   <div key={i}>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           <div style={card}>
             <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', marginBottom: '16px' }}>⚠️ 在庫少ない作品</p>
             {lowStock.length === 0
-              ? <p style={{ fontSize: '12px', color: '#ccc', textAlign: 'center', padding: '24px 0' }}>在庫十分です</p>
+              ? <p style={{ fontSize: '12px', color: '#999', textAlign: 'center', padding: '24px 0' }}>在庫十分です</p>
               : <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {lowStock.map((w, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: w.stock === 0 ? '#fef2f2' : '#fffbeb', borderRadius: '8px' }}>
