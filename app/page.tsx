@@ -15,7 +15,7 @@ export default function Home() {
 
       {/* ヒーロー */}
       <div style={{ position: 'relative', overflow: 'hidden', minHeight: '600px', display: 'flex', alignItems: 'center' }}>
-        <img src="/drawing.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.15 }} />
+        <img src="/drawing.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.5 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(240,240,255,0.95) 0%, rgba(255,247,237,0.9) 50%, rgba(240,253,244,0.95) 100%)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '720px', margin: '0 auto', padding: '80px 24px 60px', textAlign: 'center', width: '100%' }}>
           <div style={{ display: 'inline-block', background: '#eef2ff', color: '#6366f1', fontSize: '12px', fontWeight: '600', padding: '4px 14px', borderRadius: '20px', marginBottom: '20px', letterSpacing: '0.05em' }}>
@@ -49,8 +49,8 @@ export default function Home() {
 
       {/* 特徴セクション */}
       <div style={{ position: 'relative', marginTop: '80px', overflow: 'hidden' }}>
-        <img src="/bookshelf.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.3 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(247,247,245,0.95)' }} />
+        <img src="/bookshelf.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.5 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(247,247,245,0.8)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto', padding: '80px 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#111', letterSpacing: '-1px', marginBottom: '8px' }}>必要な機能が全部揃ってる</h2>
