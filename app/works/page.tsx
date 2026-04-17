@@ -128,6 +128,7 @@ export default function WorksPage() {
                   <button onClick={() => updateStock(w.id, w.stock + 5)} style={btn('#10b981', '#ecfdf5')}>＋5</button>
                   <button onClick={() => updateStock(w.id, w.stock + 10)} style={btn('#10b981', '#ecfdf5')}>＋10</button>
                   <button onClick={() => updateStock(w.id, 0)} style={btn('#888', '#f3f4f6')}>全消去</button>
+                  <button onClick={() => setEditingId(null)} style={btn('#6366f1', '#eef2ff')}>保存して閉じる</button>
                 </div>
               )}
             </div>
