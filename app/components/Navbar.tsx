@@ -19,6 +19,7 @@ export default function Navbar() {
     { href: '/events', label: 'イベント' },
     { href: '/sales', label: '売上' },
     { href: '/profile', label: 'プロフィール' },
+    { href: '/report', label: '収支' },
   ]
 
   return (
