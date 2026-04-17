@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Home() {
   return (
@@ -16,7 +15,7 @@ export default function Home() {
 
       {/* ヒーロー */}
       <div style={{ position: 'relative', overflow: 'hidden', minHeight: '600px', display: 'flex', alignItems: 'center' }}>
-        <Image src="/drawing.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center', opacity: 0.15 }} />
+        <img src="/drawing.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.15 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(240,240,255,0.95) 0%, rgba(255,247,237,0.9) 50%, rgba(240,253,244,0.95) 100%)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '720px', margin: '0 auto', padding: '80px 24px 60px', textAlign: 'center', width: '100%' }}>
           <div style={{ display: 'inline-block', background: '#eef2ff', color: '#6366f1', fontSize: '12px', fontWeight: '600', padding: '4px 14px', borderRadius: '20px', marginBottom: '20px', letterSpacing: '0.05em' }}>
@@ -44,13 +43,13 @@ export default function Home() {
             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10b981' }} />
             <span style={{ fontSize: '11px', color: '#999', marginLeft: '8px' }}>doujin-manager.vercel.app/dashboard</span>
           </div>
-          <Image src="/dashboard-preview.png" alt="ダッシュボード画面" width={900} height={600} style={{ width: '100%', height: 'auto', display: 'block' }} />
+          <img src="/dashboard-preview.png" alt="ダッシュボード画面" width={900} height={600} style={{ width: '100%', height: 'auto', display: 'block' }} />
         </div>
       </div>
 
       {/* 特徴セクション */}
       <div style={{ position: 'relative', marginTop: '80px', overflow: 'hidden' }}>
-        <Image src="/bookshelf.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center', opacity: 0.08 }} />
+        <img src="/bookshelf.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.08 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(247,247,245,0.95)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto', padding: '80px 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
@@ -104,7 +103,7 @@ export default function Home() {
 
       {/* CTA */}
       <div style={{ position: 'relative', overflow: 'hidden' }}>
-        <Image src="/market.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center top' }} />
+        <img src="/market.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '80px 24px', textAlign: 'center', color: '#fff' }}>
           <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '12px', letterSpacing: '-1px' }}>今すぐ無料で始めよう</h2>
