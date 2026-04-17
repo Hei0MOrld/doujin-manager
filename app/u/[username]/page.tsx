@@ -1,12 +1,16 @@
-import { createClient } from '../../../app/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
-export default async function PublicProfilePage({ params }: { params: { username: string } }) {
-  const supabase = createClient()
+export default async function PublicProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+  const { username } = await params
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('username', params.username)
+    .eq('username', username)
     .single()
 
   if (!profile) {
@@ -36,8 +40,8 @@ export default async function PublicProfilePage({ params }: { params: { username
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '40px 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', margin: '0 auto 16px' }}>📚</div>
-          <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111', marginBottom: '4px' }}>{profile.circle_name || params.username}</h1>
-          <p style={{ fontSize: '13px', color: '#999' }}>@{params.username} の在庫一覧</p>
+          <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111', marginBottom: '4px' }}>{profile.circle_name || username}</h1>
+          <p style={{ fontSize: '13px', color: '#999' }}>@{username} の在庫一覧</p>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
