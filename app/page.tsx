@@ -49,7 +49,7 @@ export default function Home() {
 
       {/* 特徴セクション */}
       <div style={{ position: 'relative', marginTop: '80px', overflow: 'hidden' }}>
-        <img src="/bookshelf.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.08 }} />
+        <img src="/bookshelf.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.3 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(247,247,245,0.95)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto', padding: '80px 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
