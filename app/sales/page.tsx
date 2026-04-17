@@ -92,6 +92,12 @@ export default function SalesPage() {
     setLiveLoading(false)
   }
 
+  const handleDeleteSale = async (id: string) => {
+  if (!confirm('この売上記録を削除しますか？')) return
+  await supabase.from('sales').delete().eq('id', id)
+  setSales(prev => prev.filter(s => s.id !== id))
+    }
+
   const totalRevenue = sales.reduce((sum, s) => sum + s.revenue, 0)
   const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
   const select = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none', background: '#fff' }
@@ -207,9 +213,15 @@ export default function SalesPage() {
                     <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#666', padding: '2px 8px', borderRadius: '20px' }}>{s.events?.name} · {s.quantity}部</span>
                   </div>
                 </div>
-                <span style={{ fontSize: '15px', fontWeight: '700', color: '#10b981' }}>
-                  ¥{s.revenue.toLocaleString()}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '700', color: '#10b981' }}>
+                        ¥{s.revenue.toLocaleString()}
+                    </span>
+                    <button onClick={() => handleDeleteSale(s.id)}
+                        style={{ padding: '5px 12px', borderRadius: '8px', border: '1px solid #fecaca', background: '#fef2f2', color: '#ef4444', fontSize: '12px', cursor: 'pointer', fontWeight: '500' }}>
+                        削除
+                    </button>
+                    </div>
               </div>
             </div>
           ))}

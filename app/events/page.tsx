@@ -49,6 +49,12 @@ export default function EventsPage() {
     setLoading(false)
   }
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('このイベントを削除しますか？')) return
+    await supabase.from('events').delete().eq('id', id)
+    setEvents(prev => prev.filter(e => e.id !== id))
+  }
+
   const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
   const input = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none' }
 
@@ -84,10 +90,7 @@ export default function EventsPage() {
             </div>
           }
           {events.map(e => (
-            <div key={e.id} style={{ ...card, padding: '16px 20px' }}
-              onMouseEnter={e2 => (e2.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)')}
-              onMouseLeave={e2 => (e2.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)')}
-            >
+            <div key={e.id} style={{ ...card, padding: '16px 20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🎪</div>
@@ -96,9 +99,15 @@ export default function EventsPage() {
                     <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#666', padding: '2px 8px', borderRadius: '20px' }}>{e.location || '場所未設定'}</span>
                   </div>
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: '500', padding: '4px 10px', borderRadius: '20px', background: '#fffbeb', color: '#f59e0b', border: '1px solid #fde68a' }}>
-                  {e.event_date || '日付未設定'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '500', padding: '4px 10px', borderRadius: '20px', background: '#fffbeb', color: '#f59e0b', border: '1px solid #fde68a' }}>
+                    {e.event_date || '日付未設定'}
+                  </span>
+                  <button onClick={() => handleDelete(e.id)}
+                    style={{ padding: '5px 12px', borderRadius: '8px', border: '1px solid #fecaca', background: '#fef2f2', color: '#ef4444', fontSize: '12px', cursor: 'pointer', fontWeight: '500' }}>
+                    削除
+                  </button>
+                </div>
               </div>
             </div>
           ))}
