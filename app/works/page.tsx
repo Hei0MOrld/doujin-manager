@@ -19,8 +19,7 @@ export default function WorksPage() {
   const [price, setPrice] = useState('')
   const [stock, setStock] = useState('')
   const [loading, setLoading] = useState(false)
-  const [editingStock, setEditingStock] = useState<string | null>(null)
-  const [editStockVal, setEditStockVal] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -54,20 +53,15 @@ export default function WorksPage() {
     setLoading(false)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('この作品を削除しますか？')) return
-    await supabase.from('works').delete().eq('id', id)
-    await fetchWorks()
-  }
-
-  const handleStockSave = async (id: string) => {
-    await supabase.from('works').update({ stock: parseInt(editStockVal) || 0 }).eq('id', id)
-    setEditingStock(null)
-    await fetchWorks()
+  const updateStock = async (id: string, newStock: number) => {
+    const s = Math.max(0, newStock)
+    await supabase.from('works').update({ stock: s }).eq('id', id)
+    setWorks(prev => prev.map(w => w.id === id ? { ...w, stock: s } : w))
   }
 
   const card = { background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }
   const input = { width: '100%', padding: '10px 12px', border: '1px solid #e5e5e5', borderRadius: '10px', fontSize: '14px', color: '#111', outline: 'none' }
+  const btn = (color: string, bg: string) => ({ padding: '5px 10px', borderRadius: '8px', border: `1px solid ${color}`, background: bg, color, fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' as const })
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
@@ -82,7 +76,7 @@ export default function WorksPage() {
         </div>
 
         <div style={{ ...card, padding: '20px', marginBottom: '20px', borderLeft: '4px solid #6366f1' }}>
-          <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#6366f1', marginBottom: '14px', letterSpacing: '0.05em' }}>＋ 新しい作品を追加</h2>
+          <h2 style={{ fontSize: '13px', fontWeight: '600', color: '#6366f1', marginBottom: '14px' }}>＋ 新しい作品を追加</h2>
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="タイトル*" style={{ ...input, marginBottom: '8px' }} />
           <input value={genre} onChange={e => setGenre(e.target.value)} placeholder="ジャンル（例：オリジナル・東方）" style={{ ...input, marginBottom: '8px' }} />
           <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
@@ -100,12 +94,11 @@ export default function WorksPage() {
             <div style={{ ...card, padding: '40px', textAlign: 'center' }}>
               <p style={{ fontSize: '32px', marginBottom: '8px' }}>📚</p>
               <p style={{ fontSize: '14px', color: '#999' }}>まだ作品がありません</p>
-              <p style={{ fontSize: '12px', color: '#bbb', marginTop: '4px' }}>上のフォームから追加してください</p>
             </div>
           }
           {works.map(w => (
             <div key={w.id} style={{ ...card, padding: '16px 20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: editingId === w.id ? '12px' : '0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>📖</div>
                   <div>
@@ -113,31 +106,30 @@ export default function WorksPage() {
                     <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#666', padding: '2px 8px', borderRadius: '20px' }}>{w.genre || 'ジャンル未設定'}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: '15px', fontWeight: '700', color: '#111', marginBottom: '4px' }}>¥{w.price.toLocaleString()}</p>
-                    {editingStock === w.id ? (
-                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <input type="number" value={editStockVal} onChange={e => setEditStockVal(e.target.value)}
-                          style={{ width: '60px', padding: '4px 8px', border: '1px solid #e5e5e5', borderRadius: '6px', fontSize: '12px', color: '#111' }} />
-                        <button onClick={() => handleStockSave(w.id)}
-                          style={{ padding: '4px 8px', background: '#111', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}>保存</button>
-                        <button onClick={() => setEditingStock(null)}
-                          style={{ padding: '4px 8px', background: '#f3f4f6', color: '#666', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}>✕</button>
-                      </div>
-                    ) : (
-                      <span onClick={() => { setEditingStock(w.id); setEditStockVal(String(w.stock)) }}
-                        style={{ fontSize: '11px', fontWeight: '600', padding: '2px 10px', borderRadius: '20px', cursor: 'pointer', background: w.stock === 0 ? '#fef2f2' : w.stock < 5 ? '#fffbeb' : '#ecfdf5', color: w.stock === 0 ? '#ef4444' : w.stock < 5 ? '#f59e0b' : '#10b981' }}>
-                        在庫 {w.stock}部 ✏️
-                      </span>
-                    )}
+                    <span
+                      onClick={() => setEditingId(editingId === w.id ? null : w.id)}
+                      style={{ fontSize: '11px', fontWeight: '600', padding: '2px 10px', borderRadius: '20px', cursor: 'pointer', background: w.stock === 0 ? '#fef2f2' : w.stock < 5 ? '#fffbeb' : '#ecfdf5', color: w.stock === 0 ? '#ef4444' : w.stock < 5 ? '#f59e0b' : '#10b981' }}>
+                      在庫 {w.stock}部 {editingId === w.id ? '▲' : '▼'}
+                    </span>
                   </div>
-                  <button onClick={() => handleDelete(w.id)}
-                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #fecaca', background: '#fef2f2', color: '#ef4444', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    🗑
-                  </button>
                 </div>
               </div>
+
+              {editingId === w.id && (
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', paddingTop: '10px', borderTop: '1px solid #f3f4f6' }}>
+                  <button onClick={() => updateStock(w.id, w.stock - 10)} style={btn('#ef4444', '#fef2f2')}>－10</button>
+                  <button onClick={() => updateStock(w.id, w.stock - 5)} style={btn('#ef4444', '#fef2f2')}>－5</button>
+                  <button onClick={() => updateStock(w.id, w.stock - 1)} style={btn('#ef4444', '#fef2f2')}>－1</button>
+                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#111', padding: '0 8px', minWidth: '40px', textAlign: 'center' }}>{w.stock}</span>
+                  <button onClick={() => updateStock(w.id, w.stock + 1)} style={btn('#10b981', '#ecfdf5')}>＋1</button>
+                  <button onClick={() => updateStock(w.id, w.stock + 5)} style={btn('#10b981', '#ecfdf5')}>＋5</button>
+                  <button onClick={() => updateStock(w.id, w.stock + 10)} style={btn('#10b981', '#ecfdf5')}>＋10</button>
+                  <button onClick={() => updateStock(w.id, 0)} style={btn('#888', '#f3f4f6')}>全消去</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
