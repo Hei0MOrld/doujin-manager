@@ -53,6 +53,12 @@ export default function WorksPage() {
     setLoading(false)
   }
 
+  const handleDelete = async (id: string) => {
+  if (!confirm('この作品を削除しますか？')) return
+  await supabase.from('works').delete().eq('id', id)
+  setWorks(prev => prev.filter(w => w.id !== id))
+    }
+
   const updateStock = async (id: string, newStock: number) => {
     const s = Math.max(0, newStock)
     await supabase.from('works').update({ stock: s }).eq('id', id)
@@ -130,6 +136,9 @@ export default function WorksPage() {
                   <button onClick={() => updateStock(w.id, 0)} style={btn('#888', '#f3f4f6')}>全消去</button>
                   <div style={{ flex: 3 }} />
                   <button onClick={() => setEditingId(null)} style={btn('#6366f1', '#eef2ff')}>保存して閉じる</button>
+                  <button onClick={() => handleDelete(w.id)}
+                    style={{ padding: '5px 12px', borderRadius: '8px', border: '1px solid #fecaca', background: '#fef2f2', color: '#ef4444', fontSize: '12px', cursor: 'pointer', fontWeight: '500' }}>
+                    削除</button>
                 </div>
               )}
             </div>
