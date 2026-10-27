@@ -83,8 +83,8 @@ export default function Home() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', maxWidth: '600px', margin: '0 auto' }}>
           {[
-            { name: '無料', price: '¥0', period: '/月', features: ['作品登録 3件まで', 'イベント記録 5件まで', '基本在庫管理'], accent: '#e5e5e5' },
-            { name: 'Pro', price: '¥400', period: '/月', features: ['作品・イベント無制限', 'CSVエクスポート', '公開プロフィールページ', '収支レポート詳細版'], accent: '#6366f1', featured: true },
+            { name: '無料', price: '¥0', period: '/月', features: ['いまは全機能を無料で使えます', '作品・イベント・売上・在庫の管理', '収支レポート'], accent: '#6366f1', featured: true },
+            { name: 'Pro', price: '準備中', period: '', features: ['CSVエクスポート', '収支レポート詳細版', '公開時期は未定です'], accent: '#e5e5e5' },
           ].map((p, i) => (
             <div key={i} style={{ background: '#fff', borderRadius: '16px', padding: '24px', border: p.featured ? '2px solid #6366f1' : '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', position: 'relative' }}>
               {p.featured && <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#6366f1', color: '#fff', fontSize: '11px', fontWeight: '600', padding: '3px 12px', borderRadius: '20px' }}>おすすめ</div>}
