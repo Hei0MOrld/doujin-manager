@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 同人誌マネージャー
 
-## Getting Started
+同人作家のための、在庫・売上・イベントの管理ツール。即売会の当日も、スマホから売上を記録できます。
 
-First, run the development server:
+**公開中:** https://doujin-manager.vercel.app ・ 公開在庫ページの見本: https://doujin-manager.vercel.app/u/demo
+
+![トップページ](docs/top.jpg)
+
+## できること
+
+- **作品**: タイトル・ジャンル・頒布価格・在庫数を登録
+- **イベント**: 参加する即売会(日付・会場)を登録
+- **売上**: 通常の記録に加えて、当日用の「ライブ」モード — 作品ごとにタップで部数を数えて、最後にまとめて保存。保存すると在庫が自動で減る
+- **収支**: イベントごとに参加費・交通費などの経費を入れて、売上との差を見る
+- **公開在庫ページ** (`/u/ユーザー名`): 在庫と価格をお客さんに見せるページ。SNSにURLを貼るだけ
+
+![公開在庫ページ](docs/public-page.jpg)
+
+## しくみ
+
+- Next.js (App Router) + Supabase (Auth / Postgres) + Vercel
+- データの守り方は Postgres の行レベルセキュリティ (RLS):
+  - 売上・イベント・経費 — 本人だけが読み書きできる
+  - 作品・プロフィール — 誰でも読める(公開在庫ページのため)。書けるのは本人だけ
+- 在庫を減らす処理は `decrement_stock(work_id, qty)` という DB 関数で、0 未満にはならない
+
+## 動かす
 
 ```bash
+npm install
+cp .env.local.example .env.local   # Supabase の URL と anon キーを入れる
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 を開く。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**English:** Inventory, sales and event manager for Japanese doujinshi (self-published comics) creators. Record sales on your phone at a convention (tap-to-count "live" mode, stock decrements automatically), track per-event costs, and share a public stock page. Next.js + Supabase (RLS: sales/events/costs private per user; works/profiles publicly readable for the share page) + Vercel.
